@@ -1,4 +1,3 @@
-#! /usr/bin/env python3
 
 import copy
 import cv2
@@ -11,16 +10,43 @@ prediction = ''
 score = 0
 bgModel = None
 
-gesture_names = {0: 'E',
-                 1: 'L',
-                 2: 'F',
-                 3: 'V',
-                 4: 'B'}
+
+gesture_names = {0: 'A',
+                 1: 'B',
+                 2: 'C',
+                 3: 'D',
+                 4: 'E',
+                 5: 'F',
+                 6: 'G',
+                 7: 'H',
+                 8: 'I',
+                 9: 'J',
+                 10: 'K',
+                 11: 'L',
+                 12: 'M',
+                 13: 'N',
+                 14: '0',
+                 15: 'P',
+                 16: 'Q',
+                 17: 'R',
+                 18: 'S',
+                 19: 'T',
+                 20: 'U',
+                 21: 'V',
+                 22: 'W',
+                 23: 'X',
+                 24: 'Y',
+                 25: 'Z',
+
+                 }
+
 
 # Load model tu file da train
-model = load_model('models/mymodel.h5')
+model = load_model('./models/mymodel.h5')
 
 # Ham de predict xem la ky tu gi
+
+
 def predict_rgb_image_vgg(image):
     image = np.array(image, dtype='float32')
     image /= 255
@@ -50,17 +76,17 @@ cap_region_y_end = 0.8
 # Cac thong so lay threshold
 threshold = 60
 blurValue = 41
-bgSubThreshold = 50#50
+bgSubThreshold = 50  # 50
 learningRate = 0
 
 # Nguong du doan ky tu
-predThreshold= 95
+predThreshold = 95
 
 isBgCaptured = 0  # Bien luu tru da capture background chua
 
 # Camera
 camera = cv2.VideoCapture(0)
-camera.set(10,200)
+camera.set(10, 200)
 camera.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.01)
 
 while camera.isOpened():
@@ -82,9 +108,7 @@ while camera.isOpened():
 
         # Lay vung detection
         img = img[0:int(cap_region_y_end * frame.shape[0]),
-              int(cap_region_x_begin * frame.shape[1]):frame.shape[1]]  # clip the ROI
-
-
+                  int(cap_region_x_begin * frame.shape[1]):frame.shape[1]]  # clip the ROI
 
         # Chuyen ve den trang
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -92,22 +116,23 @@ while camera.isOpened():
 
         cv2.imshow('original1', cv2.resize(blur, dsize=None, fx=0.5, fy=0.5))
 
-        ret, thresh = cv2.threshold(blur, threshold, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        ret, thresh = cv2.threshold(
+            blur, threshold, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
         cv2.imshow('thresh', cv2.resize(thresh, dsize=None, fx=0.5, fy=0.5))
 
-        if (np.count_nonzero(thresh)/(thresh.shape[0]*thresh.shape[0])>0.2):
+        if (np.count_nonzero(thresh)/(thresh.shape[0]*thresh.shape[0]) > 0.2):
             # Neu nhu ve duoc hinh ban tay
             if (thresh is not None):
                 # Dua vao mang de predict
                 target = np.stack((thresh,) * 3, axis=-1)
-                target = cv2.resize(target, (224, 224))
-                target = target.reshape(1, 224, 224, 3)
+                target = cv2.resize(target, (120, 120))
+                target = target.reshape(1, 120, 120, 3)
                 prediction, score = predict_rgb_image_vgg(target)
 
                 # Neu probality > nguong du doan thi hien thi
-                print(score,prediction)
-                if (score>=predThreshold):
+                print(score, prediction)
+                if (score >= predThreshold):
                     cv2.putText(frame, "Sign:" + prediction, (20, 150), cv2.FONT_HERSHEY_SIMPLEX, 3,
                                 (0, 0, 255), 10, lineType=cv2.LINE_AA)
     thresh = None
@@ -130,10 +155,9 @@ while camera.isOpened():
         bgModel = None
         isBgCaptured = 0
         cv2.putText(frame, "Background reset", (20, 150), cv2.FONT_HERSHEY_SIMPLEX, 3,
-                    (0, 0, 255),10,lineType=cv2.LINE_AA)
+                    (0, 0, 255), 10, lineType=cv2.LINE_AA)
         print('Background reset')
         time.sleep(1)
-
 
     cv2.imshow('original', cv2.resize(frame, dsize=None, fx=0.5, fy=0.5))
 
