@@ -82,7 +82,6 @@ gestures_map = {'A': 0,
 
                 }
 
-
 gesture_names = {0: 'A',
                  1: 'B',
                  2: 'C',
@@ -119,7 +118,7 @@ rgb = False
 imageSize = 120
 
 
-# Ham xu ly anh resize ve 224x224 va chuyen ve numpy array
+# Ham xu ly anh resize ve 120x120 va chuyen ve numpy array
 def process_image(path):
     img = Image.open(path)
     img = img.resize((imageSize, imageSize))
